@@ -7,6 +7,13 @@ const blogRoutes = require("./routes/blogRoutes");
 require("dotenv").config();
 const app = express();
 
+const cors = require('cors');
+
+app.use(cors({
+  origin: "http://localhost:3000",
+  methods: ["GET","POST","PUT","DELETE"],
+}));
+
 //parse application/jason
 app.use(bodyParser.json());
 app.use("/comment", commentRoutes);
