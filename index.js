@@ -35,6 +35,12 @@ const connectdb = async()=>{
 
 connectdb();
 
+// app.post("/signup", (req,res) =>{
+//     const{password, email, username}=req.body;
+//     console.log(password, email, username);
+// });
+    
+
 // mongoose.connect("mongodb+srv://buzzerbreaker909:YspqpeIHA5MtTEvk@cluster0.oedtchg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 // ).then(()=>{
 //     console.log("Mongodb connected successfully");
@@ -43,8 +49,6 @@ connectdb();
 // })
 
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN0ZXZlcm9nZXJzQGdtYWlsLmNvbSIsImlhdCI6MTcxNDE5ODU3OSwiZXhwIjoxNzE0Mjg0OTc5fQ.DOnm-fOGFibDkPJESROi6Vk1pI4D_mWqtXwA7Cla7ak
-
-
 
 app.listen(5000, ()=>{
     console.log("Server at 5000");

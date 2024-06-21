@@ -1,7 +1,7 @@
 function verifyUsingJWT(req, res, next){
     const token = req.headers.authorization;
     if(token===undefined){
-        res.status(404).send({message: "Please send token"})
+        return res.status(404).send({message: "Please send token"})
     }
     let tokenValue = token.split(" ");
     tokenValue = tokenValue[1];

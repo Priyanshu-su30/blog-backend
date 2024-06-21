@@ -47,11 +47,13 @@ function userSpecificBlogs(req,res) {
 
 // app.get('/getAllBlogs', (req, res) => )
 function getAllBlogs(req,res) {
+    console.log(req,"Hello");
     myBlogModel.find().then((data)=>{
         return res.status(200).send({message: "Blog fetched successfully", blogData: data})
     }).catch(()=>{
         return res.status(500).send({message:"Server failed to send blogs"})
     });
+    
 }
 
 
