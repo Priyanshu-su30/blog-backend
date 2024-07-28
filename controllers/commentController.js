@@ -9,7 +9,8 @@ function getBlogSpecificComments(req, res) {
         return res.status(404).send({message: "You forgot to tell which blog's comment you want to fetch."})
     }
 
-    myCommentModel.find({blogId: blogId.blogId}).then((data)=>{
+    myCommentModel.find({blogId: blogId.blogId})
+    .then((data)=>{
         console.log(data);
         return res.status(200).send({message:"here are your comments", data:data})
     }).catch((error)=>{
@@ -19,36 +20,48 @@ function getBlogSpecificComments(req, res) {
 
 
 // app.put("/replyComment", verifyUsingJWT, (req, res)=>)
-function replyComment(req,res){
-    const body = req.body;
-    const commentId = req.query;
-    
-    jsonwebtoken.verify(req.token, process.env.SECRETKEY, (error, result) =>{
-        if(error == null){
-            return res.status(404).send({message: "Token verification failed"})
-        }
-        if(result!=undefined){            
-
-            if(Object.hasOwn(commentId, "commentId") === false && commentId.commentId.length===0){
-                return res.status(404).send({message: "You forgot to tell which blog's comment you are writing."})
+    function replyComment(req, res) {
+        const body = req.body;
+        const commentId = req.query;
+        console.log(req.token);
+        jsonwebtoken.verify(req.token, process.env.SECRETKEY, (error, result) => {
+          if (error !== null) {
+            return res.status(404).send({ message: "Token verification failed." });
+          }
+          if (result !== undefined) {
+            // userid = {id: "dfsrfef"}; this id will refer to blog id.
+            if (
+              Object.hasOwnProperty(commentId, "commentId") === false &&
+              commentId.commentId.length === 0
+            ) {
+              return res.status(404).send({
+                message: "You forgot to tell which blog's comment you are writing.",
+              });
             }
-    
-            if(isEmpty(body)){
-                return res.status(404).send({message: "you forgot to tell what repky you are writing."})
+      
+            if (isEmpty(body)) {
+              return res
+                .status(404)
+                .send({ message: "You forgot to tell what reply you are writing." });
             }
-    
-            myCommentModel.findByIdAndUpdate(commentId.commentId, {...body}).then(()=>{
-                return res.status(201).send({message:"Successfully stored your reply."})
-            }).catch(()=>{
-                return res.status(500).send({message:"Server failed to store your reply"})
-            });
-    
-        }else{
-            return res.status(404).send({message: "Token verification failed"})
-        }
-    })
-}
-
+      
+            myCommentModel
+              .findByIdAndUpdate(commentId.commentId, { ...body })
+              .then(() => {
+                return res.status(201).send({ message: "Successfully saved reply." });
+              })
+              .catch((error) => {
+                console.log(error);
+                return res
+                  .status(500)
+                  .send({ message: "Server failed to store your reply." });
+              });
+          } else {
+            return res.status(404).send({ message: "Token verification failed." });
+          }
+        });
+      }
+      
 
 // app.post("/newComment", (req, res)=>)
 function newComment(req, res){
@@ -67,7 +80,8 @@ function newComment(req, res){
     const newComment = myCommentModel({blogId: blogId.blogId, ...body})
     newComment.save().then(()=>{
         return res.status(201).send({message:"Successfully stored your comment."})
-    }).catch(()=>{
+    }).catch((error)=>{
+        console.log(error);
         return res.status(500).send({message:"Server failed to store your comment"})
     });
 }

@@ -10,7 +10,7 @@ function signup(req, res) {
   
     if (password.length === 0 || email.length === 0 || username.length === 0) {
       return res
-        .status(404)
+        .status(401)
         .send({ message: "You are creating user with unknown details." });
     }
   
@@ -56,11 +56,11 @@ function signup(req, res) {
                 });
             } else {
               return res
-                .status(404)
+                .status(401)
                 .send({ message: "Bro you already have account, try to login" });
             }
           })
-          .catch((er) => {
+          .catch((err) => {
             return res
               .status(500)
               .send({ message: "Failed to Authenticate user." });
@@ -73,6 +73,7 @@ function signup(req, res) {
 
 
 // app.get("/login", (req, res)=>);
+
 function login(req, res){
     const {email, password} = req.body;
     if(email.length === 0 || password.length === 0){
@@ -86,6 +87,7 @@ function login(req, res){
         }else{
             const oldUser = data[0];
             const isPasswordMatch = bcryptjs.compareSync(password, oldUser.password);
+
             if(isPasswordMatch === true){
                 jsonwebtoken.sign({email:email}, process.env.SECRETKEY,{
                     expiresIn: 24 * 60 * 60,
@@ -98,7 +100,7 @@ function login(req, res){
                         message:"user found successfully", 
                         data:oldUser, 
                         token: result,
-                    })
+                    });
                 });
             }else{
                 return res.status(404).send({
@@ -111,4 +113,5 @@ function login(req, res){
     });
 }
 
-module.exports = {login, signup};
+
+module.exports = {signup, login};
