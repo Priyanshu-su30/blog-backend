@@ -201,50 +201,6 @@ function newBlog(req, res) {
   });
 }
 
-// function newBlog(req, res) {
-//     const blogImage = req.file;
-//     const body = req.body;
-//     console.log(req.token);
-//     if (blogImage === undefined) {
-//       return res.status(404).send({ message: "You forgot to include image." });
-//     }
-
-//     jsonwebtoken.verify(req.token, process.env.SECRETKEY, (error, result) => {
-//       console.log(error);
-//       if (error !== null) {
-//         return res.status(404).send({ message: "Token verification failed." });
-//       }
-
-//       if (result !== undefined) {
-//         cloudinary.v2.uploader
-//           .upload_stream((error, result) => {
-//             if (error !== undefined) {
-//               return res
-//                 .status(501)
-//                 .send({ message: "Server failed to upload image." });
-//             }
-
-//             const newBlog = myBlogModel({
-//               blogImage: result.url,
-//               ...body,
-//             });
-//             newBlog
-//               .save()
-//               .then(() => {
-//                 return res
-//                   .status(201)
-//                   .send({ message: "Congratulations for new blog." });
-//               })
-//               .catch(() => {
-//                 return res
-//                   .status(500)
-//                   .send({ message: "Server failed to save blog." });
-//               });
-//           })
-//           .end(blogImage.buffer);
-//       }
-//     });
-//   }
 const obj = {
   newBlog,
   updateBlog,
