@@ -2,6 +2,7 @@ const myBlogModel = require("../models/blogModel");
 const cloudinary = require("cloudinary");
 const { isEmpty } = require("../common/common");
 const jsonwebtoken = require("jsonwebtoken");
+require("dotenv").config() ;
 
 cloudinary.config({
   cloud_name: "dryycfayi",
@@ -156,50 +157,91 @@ function updateBlog(req, res) {
 }
 
 // app.post("/newBlog", uplaod.single("blogImage"),(req, res)=>)
-function newBlog(req, res) {
+// function newBlog(req, res) {
+//   const blogImage = req.file;
+//   const body = req.body;
+//   console.log(req.token);
+//   if (blogImage === undefined) {
+//     return res.status(404).send({ message: "You forgot to include image." });
+//   }
+
+//   jsonwebtoken.verify(req.token, process.env.SECRETKEY, (error, result) => {
+//     console.log(error, result);
+//     if (error !== null) {
+//       return res.status(404).send({ message: "Token verification failed." });
+//     }
+
+//     if (result !== undefined) {
+//       cloudinary.v2.uploader
+//         .upload_stream((error, result) => {
+//           if (error !== undefined) {
+//             return res
+//               .status(500)
+//               .send({ message: "Server failed to upload image." });
+//           }
+
+//           const newBlog = myBlogModel({
+//             blogImage: result.url,
+//             ...body,
+//           });
+//           newBlog
+//             .save()
+//             .then(() => {
+//               return res
+//                 .status(201)
+//                 .send({ message: "Congratulations for new blog." });
+//             })
+//             .catch(() => {
+//               return res
+//                 .status(500)
+//                 .send({ message: "Server failed to save blog." });
+//             });
+//         })
+//         .end(blogImage.buffer);
+//     }
+//   });
+// }
+
+const newBlog = (req, res) => {
   const blogImage = req.file;
   const body = req.body;
   console.log(req.token);
-  if (blogImage === undefined) {
-    return res.status(404).send({ message: "You forgot to include image." });
+
+  if (!blogImage) {
+    console.error("Image is missing in the request.");
+    return res.status(400).send({ message: "You forgot to include image." });
   }
 
   jsonwebtoken.verify(req.token, process.env.SECRETKEY, (error, result) => {
-    console.log(error, result);
-    if (error !== null) {
-      return res.status(404).send({ message: "Token verification failed." });
+    if (error) {
+      console.error("Token verification failed:", error);
+      return res.status(401).send({ message: "Token verification failed." });
     }
 
-    if (result !== undefined) {
-      cloudinary.v2.uploader
-        .upload_stream((error, result) => {
-          if (error !== undefined) {
-            return res
-              .status(500)
-              .send({ message: "Server failed to upload image." });
-          }
+    cloudinary.v2.uploader.upload_stream((error, result) => {
+      if (error) {
+        console.error("Image upload failed:", error);
+        return res.status(500).send({ message: "Server failed to upload image." });
+      }
 
-          const newBlog = myBlogModel({
-            blogImage: result.url,
-            ...body,
-          });
-          newBlog
-            .save()
-            .then(() => {
-              return res
-                .status(201)
-                .send({ message: "Congratulations for new blog." });
-            })
-            .catch(() => {
-              return res
-                .status(500)
-                .send({ message: "Server failed to save blog." });
-            });
+      const newBlog = new myBlogModel({
+        blogImage: result.url,
+        ...body,
+      });
+
+      newBlog
+        .save()
+        .then(() => {
+          res.status(201).send({ message: "Congratulations for new blog." });
         })
-        .end(blogImage.buffer);
-    }
+        .catch((err) => {
+          console.error("Saving blog failed:", err);
+          res.status(500).send({ message: "Server failed to save blog." });
+        });
+    }).end(blogImage.buffer);
   });
-}
+};
+
 
 const obj = {
   newBlog,
