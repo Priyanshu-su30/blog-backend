@@ -8,6 +8,12 @@ require("dotenv").config();
 const app = express();
 const cors = require("cors");
 
+const corsOptions = {
+  origin: 'https://starlit-creponne-768d70.netlify.app',
+};
+
+app.use(cors(corsOptions));
+
 app.use(
   cors({
     origin: "http://localhost:3000",
